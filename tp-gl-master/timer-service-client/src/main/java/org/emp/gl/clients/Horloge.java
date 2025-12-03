@@ -12,6 +12,13 @@ public class Horloge implements TimerChangeListener {
     public Horloge(String name, TimerService timerService) {
         this.name = name;
         this.timerService = timerService;
+
+        /*
+        suprimer la line precedant 
+        je doit utiliser le lookup ici avec 
+        object srv = lookup.getInstance()
+        
+        */
         
         // S'inscrire comme observateur
         timerService.addTimeChangeListener(this);
