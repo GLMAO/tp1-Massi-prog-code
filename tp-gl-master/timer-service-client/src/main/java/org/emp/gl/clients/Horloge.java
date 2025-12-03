@@ -2,33 +2,43 @@ package org.emp.gl.clients;
 
 import org.emp.gl.timer.service.TimerChangeListener;
 import org.emp.gl.timer.service.TimerService;
+import org.emp.gl.lookup.*;
 import java.beans.PropertyChangeEvent;
 
 public class Horloge implements TimerChangeListener {
 
-    String name;
-    TimerService timerService;
+    private String name;
+    private TimerService timerService;
 
-    public Horloge(String name, TimerService timerService) {
+    // NOUVEAU CONSTRUCTEUR : plus besoin de passer le TimerService
+    public Horloge(String name) {
         this.name = name;
-        this.timerService = timerService;
-
-        /*
-        suprimer la line precedant 
-        je doit utiliser le lookup ici avec 
-        object srv = lookup.getInstance()
         
-        */
+        // Récupérer le Lookup (Singleton)
+        Lookup lookup = Lookup.getInstance();
         
-        // S'inscrire comme observateur
-        timerService.addTimeChangeListener(this);
+        // Récupérer le TimerService depuis l'annuaire
+        Object service = lookup.getService("TimerService");
         
-        System.out.println("Horloge " + name + " initialized!");
+        if (service == null) {
+            throw new RuntimeException("TimerService non trouvé dans le Lookup !");
+        }
+        
+        // Cast vers TimerService
+        if (service instanceof TimerService) {
+            this.timerService = (TimerService) service;
+            
+            // S'inscrire comme observateur
+            timerService.addTimeChangeListener(this);
+            
+            System.out.println("Horloge " + name + " initialisée avec le Lookup !");
+        } else {
+            throw new RuntimeException("Le service récupéré n'est pas un TimerService !");
+        }
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        // Afficher uniquement lors des changements de secondes
         if (SECONDE_PROP.equals(evt.getPropertyName())) {
             afficherHeure();
         }

@@ -15,7 +15,6 @@
             <version>0.0.1</version>
         </dependency>
         <dependency>
-            
             <artifactId>lookup-module</artifactId>
             <groupId>org.emp.gl</groupId>
             <version>0.0.1</version>
