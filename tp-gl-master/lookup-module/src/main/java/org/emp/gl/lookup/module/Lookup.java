@@ -1,4 +1,4 @@
-package org.emp.gl.lookup;
+package org.emp.gl.lookup.module;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,9 +26,6 @@ public class Lookup {
         }
         return instance;
     }
-    
-    // ========== ANNUAIRE TYPÉ ==========
-    // CHANGEMENT : Map<Class, Object> au lieu de Map<String, Object>
     private Map<Class<?>, Object> services = new HashMap<>();
     
     /**

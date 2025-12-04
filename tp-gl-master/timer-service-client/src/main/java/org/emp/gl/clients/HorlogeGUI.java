@@ -2,7 +2,7 @@ package org.emp.gl.clients;
 
 import org.emp.gl.timer.service.TimerChangeListener;
 import org.emp.gl.timer.service.TimerService;
-import org.emp.gl.lookup.Lookup;
+import org.emp.gl.lookup.module.*;
 
 import javax.swing.*;
 import java.awt.*;
