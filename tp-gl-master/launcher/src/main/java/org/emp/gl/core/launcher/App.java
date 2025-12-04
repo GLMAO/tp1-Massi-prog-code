@@ -6,44 +6,52 @@ import org.emp.gl.clients.CompteARebours;
 import org.emp.gl.timer.service.TimerService;
 import org.emp.gl.time.service.impl.DummyTimeServiceImpl;
 import org.emp.gl.lookup.Lookup;
+
 import java.util.Random;
 
 public class App {
 
     public static void main(String[] args) {
-        testAvecLookup();
+        
+        testLookupType();
+        
+        
     }
 
-    private static void testAvecLookup() {
-        System.out.println("=== Test avec Lookup (Annuaire) ===\n");
+    /**
+     * Test du Lookup typé avec console
+     */
+    private static void testLookupType() {
+        System.out.println("╔════════════════════════════════════════╗");
+        System.out.println("║  Test Lookup Typé (Generics)           ║");
+        System.out.println("╚════════════════════════════════════════╝\n");
         
-        // 1. Récupérer l'instance du Lookup (Singleton)
+        // 1. Récupérer le Lookup
         Lookup lookup = Lookup.getInstance();
         
-        // 2. Créer le TimerService
+        // 2. Créer et enregistrer le TimerService
         TimerService timerService = new DummyTimeServiceImpl();
         
-        // 3. Enregistrer le service dans le Lookup
-        lookup.subscribeService("TimerService", timerService);
+        // NOUVELLE SYNTAXE : Utiliser la classe au lieu d'une String
+        lookup.subscribeService(TimerService.class, timerService);
         
-        // 4. Afficher les services enregistrés
+        // 3. Afficher les services
         lookup.printServices();
         
-        System.out.println();
+        // 4. Créer des Horloges (pas de paramètre)
+        System.out.println("--- Création des Horloges ---");
+        new Horloge("Paris");
+        new Horloge("Londres");
+        new Horloge("Tokyo");
         
-        // 5. Créer des Horloges (sans passer le TimerService !)
-        new Horloge("Horloge-Paris");
-        new Horloge("Horloge-Londres");
-        new Horloge("Horloge-Tokyo");
-        
-        System.out.println();
-        
-        // 6. Créer des CompteARebours
+        System.out.println("\n--- Création des CompteARebours ---");
         Random random = new Random();
         for (int i = 1; i <= 5; i++) {
             int valeur = 5 + random.nextInt(6);
             new CompteARebours("Compte-" + i, valeur);
         }
+        
+        System.out.println("\n--- Démarrage... ---\n");
         
         // Laisser tourner
         try {
@@ -52,75 +60,33 @@ public class App {
             e.printStackTrace();
         }
     }
-}
-/**
- * Hello world!
- *
- 
-public class App {
-
-    public static void main(String[] args) {
-
-        testDuTimeService();
-    }
-
-    private static void testDuTimeService() {
-        Horloge horloge = new Horloge("Num 1") ;
-    }
-
-    public static void clearScreen() {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
-    }
-}
-
-import org.emp.gl.timer.service.TimerService;
-import org.emp.gl.time.service.impl.DummyTimeServiceImpl;
-/* 
-public class App {
     
-    public static void main(String[] args) {
-        testDuTimeService();
-    }
     
-    private static void testDuTimeService() {
-    TimerService timerService = new DummyTimeServiceImpl();
-    Random random = new Random();
-    
-    for (int i = 1; i <= 10; i++) {
-        int valeur = 10 + random.nextInt(11); // Entre 10 et 20
-        new CompteARebours("Compte-" + i, valeur, timerService);
-    }
-    
-    try {
-        Thread.sleep(Long.MAX_VALUE);
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-}
-}
-*/
 
-/* 
-
-import org.emp.gl.clients.HorlogeGUI;
-
-
-public class App {
-
-    public static void main(String[] args) {
-        testHorlogeGUI();
-    }
-
-    private static void testHorlogeGUI() {
-        // Créer le TimerService
-        TimerService timerService = new DummyTimeServiceImpl();
+    /**
+     * Démo des erreurs de type
+     */
+    private static void testErreurs() {
+        Lookup lookup = Lookup.getInstance();
+        TimerService ts = new DummyTimeServiceImpl();
         
-        // Créer l'interface graphique
-        HorlogeGUI horlogeGUI = new HorlogeGUI(timerService);
+        //  OK : Enregistrer avec l'interface
+        lookup.subscribeService(TimerService.class, ts);
         
-        // Optionnel : ajouter aussi une horloge console
-        Horloge horlogeConsole = new Horloge("Console", timerService);
+        //  OK : Récupérer avec le bon type
+        TimerService service = lookup.getService(TimerService.class);
+        
+        //  ERREUR de compilation si on essaie un mauvais type :
+        // String s = lookup.getService(TimerService.class); // Erreur !
+        
+        //  ERREUR au runtime si service non trouvé :
+        try {
+            Object obj = lookup.getService(Object.class);
+        } catch (RuntimeException e) {
+            System.err.println("Erreur : " + e.getMessage());
+        }
     }
-}*/
+}
+
+
 

@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Annuaire (Service Locator Pattern)
- * Pattern Singleton pour gérer les services de l'application
+ * Annuaire (Service Locator Pattern) - VERSION TYPÉE
+ * Utilise les Generics pour la sécurité des types
  */
 public class Lookup {
     
@@ -13,7 +13,7 @@ public class Lookup {
     private static Lookup instance;
     
     private Lookup() {
-        // Constructeur privé pour empêcher l'instanciation
+        // Constructeur privé
     }
     
     public static Lookup getInstance() {
@@ -27,62 +27,102 @@ public class Lookup {
         return instance;
     }
     
-    // ========== ANNUAIRE ==========
-    private Map<String, Object> services = new HashMap<>();
+    // ========== ANNUAIRE TYPÉ ==========
+    // CHANGEMENT : Map<Class, Object> au lieu de Map<String, Object>
+    private Map<Class<?>, Object> services = new HashMap<>();
     
     /**
-     * Enregistrer un service dans l'annuaire
-     * @param serviceName Nom du service (ex: "TimerService")
+     * Enregistrer un service avec vérification de type
+     * 
+     * @param <T> Type du service
+     * @param serviceClass Classe du service (ex: TimerService.class)
      * @param instance Instance du service
+     * 
+     * Exemple : lookup.subscribeService(TimerService.class, timerServiceImpl);
      */
-    public void subscribeService(String serviceName, Object instance) {
-        if (serviceName == null || serviceName.isEmpty()) {
-            throw new IllegalArgumentException("Le nom du service ne peut pas être vide");
+    public <T> void subscribeService(Class<? super T> serviceClass, T instance) {
+        if (serviceClass == null) {
+            throw new IllegalArgumentException("La classe du service ne peut pas être null");
         }
         if (instance == null) {
             throw new IllegalArgumentException("L'instance ne peut pas être null");
         }
         
-        services.put(serviceName, instance);
-        System.out.println("✓ Service '" + serviceName + "' enregistré dans le Lookup");
+        // Vérifier que l'instance est bien du bon type
+        if (!serviceClass.isInstance(instance)) {
+            throw new IllegalArgumentException(
+                "L'instance fournie n'est pas compatible avec " + serviceClass.getName()
+            );
+        }
+        
+        services.put(serviceClass, instance);
+        System.out.println("✓ Service '" + serviceClass.getSimpleName() + 
+                         "' enregistré [" + instance.getClass().getSimpleName() + "]");
     }
     
     /**
-     * Récupérer un service depuis l'annuaire
-     * @param serviceName Nom du service
-     * @return Instance du service ou null si non trouvé
+     * Récupérer un service avec le type automatique (pas de cast !)
+     * 
+     * @param <T> Type du service
+     * @param serviceClass Classe du service
+     * @return Instance typée du service
+     * 
+     * Exemple : TimerService ts = lookup.getService(TimerService.class);
      */
-    public Object getService(String serviceName) {
-        Object service = services.get(serviceName);
-        
-        if (service == null) {
-            System.err.println("✗ Service '" + serviceName + "' non trouvé dans le Lookup");
+    @SuppressWarnings("unchecked")
+    public <T> T getService(Class<T> serviceClass) {
+        if (serviceClass == null) {
+            throw new IllegalArgumentException("La classe du service ne peut pas être null");
         }
         
-        return service;
+        Object service = services.get(serviceClass);
+        
+        if (service == null) {
+            throw new RuntimeException(
+                "Service '" + serviceClass.getSimpleName() + "' non trouvé dans le Lookup !"
+            );
+        }
+        
+        // Le cast est sûr car on a vérifié lors de l'enregistrement
+        return (T) service;
     }
     
     /**
      * Vérifier si un service existe
      */
-    public boolean hasService(String serviceName) {
-        return services.containsKey(serviceName);
+    public <T> boolean hasService(Class<T> serviceClass) {
+        return services.containsKey(serviceClass);
     }
     
     /**
-     * Supprimer un service (pour les tests)
+     * Supprimer un service
      */
-    public void unsubscribeService(String serviceName) {
-        services.remove(serviceName);
+    public <T> void unsubscribeService(Class<T> serviceClass) {
+        services.remove(serviceClass);
+        System.out.println("✗ Service '" + serviceClass.getSimpleName() + "' supprimé");
     }
     
     /**
-     * Afficher tous les services enregistrés (debug)
+     * Afficher tous les services (debug)
      */
     public void printServices() {
-        System.out.println("=== Services enregistrés ===");
-        services.forEach((name, instance) -> 
-            System.out.println("- " + name + " : " + instance.getClass().getSimpleName())
-        );
+        System.out.println("\n=== Services enregistrés dans le Lookup ===");
+        if (services.isEmpty()) {
+            System.out.println("  (aucun service)");
+        } else {
+            services.forEach((clazz, instance) -> 
+                System.out.println("  - " + clazz.getSimpleName() + 
+                                 " → " + instance.getClass().getSimpleName())
+            );
+        }
+        System.out.println("==========================================\n");
+    }
+    
+    /**
+     * Réinitialiser le Lookup (utile pour les tests)
+     */
+    public void clear() {
+        services.clear();
+        System.out.println("✓ Lookup réinitialisé");
     }
 }
