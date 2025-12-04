@@ -20,10 +20,11 @@ public class TimeDisplayState implements WatchState {
         viewer.setState(new SecondsDisplayState(viewer));
     }
     
-    @Override
+    
+   @Override
     public void onModePressed() {
-        // Pour l'instant, ne fait rien
-        // (sera utilisé pour le chronomètre dans la question b)
+        // Passer au mode chronomètre
+        viewer.setState(new ChronoState(viewer));
     }
     
     @Override

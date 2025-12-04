@@ -10,6 +10,7 @@ public class WatchViewer extends JFrame {
     static int COUNT = 0;
     
     private Horloge horloge = new Horloge("Watch-" + COUNT);
+    private Chronometre chronometre = new Chronometre();
     
     // Labels pour l'affichage
     private JLabel hh = new JLabel();
@@ -84,6 +85,10 @@ public class WatchViewer extends JFrame {
     public void ticHappened() {
         blinkOn = !blinkOn;
         currentState.updateDisplay();
+    }
+
+    public Chronometre getChronometre() {
+        return chronometre;
     }
     
     /**

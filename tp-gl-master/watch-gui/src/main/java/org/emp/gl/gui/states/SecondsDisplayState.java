@@ -21,9 +21,11 @@ public class SecondsDisplayState implements WatchState {
     }
     
     @Override
-    public void onModePressed() {
-        // Pour l'instant, ne fait rien
-    }
+    
+        public void onModePressed() {
+            // Passer au mode chronomètre
+            viewer.setState(new ChronoState(viewer));
+        }
     
     @Override
     public void updateDisplay() {
