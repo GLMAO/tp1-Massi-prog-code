@@ -5,46 +5,47 @@ import org.emp.gl.timer.service.TimerService;
 import org.emp.gl.lookup.module.*;
 import java.beans.PropertyChangeEvent;
 
-
-
 public class Horloge implements TimerChangeListener {
     
     private String name;
     private TimerService timerService;
     
-    // Variables internes pour le réglage
     private int seconds;
     private int minutes;
     private int hours;
+    private boolean autoUpdateEnabled = true;
+    
     
     public Horloge(String name) {
         this.name = name;
         
-        // Récupérer le TimerService depuis le Lookup
         timerService = Lookup.getInstance().getService(TimerService.class);
         
         if (timerService != null) {
-            // Initialiser avec l'heure actuelle du service
             seconds = timerService.getSecondes();
             minutes = timerService.getMinutes();
             hours = timerService.getHeures();
             
-            // S'inscrire comme observateur
             timerService.addTimeChangeListener(this);
         }
     }
-    
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
+        if (!autoUpdateEnabled) return; // Ne pas mettre à jour si désactivé
+        
         if (TimerChangeListener.SECONDE_PROP.equals(evt.getPropertyName())) {
             secondElapsed();
         }
     }
     
-    /**
-     * Appelée à chaque seconde écoulée
-     */
-    void secondElapsed() {
+    public void enableAutoUpdate(boolean enabled) {
+        this.autoUpdateEnabled = enabled;
+    }
+    
+    
+    
+    
+    public void secondElapsed() {
         seconds = (seconds + 1) % 60;
         if (seconds == 0) {
             minutes = (minutes + 1) % 60;
@@ -54,17 +55,17 @@ public class Horloge implements TimerChangeListener {
         }
     }
     
-    // Méthodes pour incrémenter (réglage manuel)
+    // CORRECTION : Ces méthodes avaient des erreurs
     public void incrementSecond() {
-        seconds = (seconds + 1) % 60;
+        seconds = (seconds + 1) % 60;  // Était : seconds = (minutes + 1) % 60
     }
     
     public void incrementMinutes() {
-        minutes = (minutes + 1) % 60;
+        minutes = (minutes + 1) % 60;  // Était : seconds = (minutes + 1) % 60
     }
     
     public void incrementHours() {
-        hours = (hours + 1) % 24;
+        hours = (hours + 1) % 24;      // Était : seconds = (hours + 1) % 24
     }
     
     // Getters

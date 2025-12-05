@@ -1,5 +1,13 @@
 org/emp/gl/gui/WatchViewer.class
-org/emp/gl/gui/states/SecondsDisplayState.class
+org/emp/gl/gui/states/EditHoursState.class
+org/emp/gl/gui/states/SettingsSubState.class
 org/emp/gl/gui/states/WatchState.class
-org/emp/gl/gui/states/TimeDisplayState.class
 org/emp/gl/gui/ButtonViewer.class
+org/emp/gl/gui/ButtonViewer$1.class
+org/emp/gl/gui/states/EditMinutesState.class
+org/emp/gl/gui/states/TimeDisplayState.class
+org/emp/gl/gui/states/ChronoState.class
+org/emp/gl/gui/states/SettingsState.class
+org/emp/gl/gui/states/SecondsDisplayState.class
+org/emp/gl/gui/states/EditSecondsState.class
+org/emp/gl/gui/Chronometre.class

@@ -11,6 +11,8 @@ public class WatchViewer extends JFrame {
     
     private Horloge horloge = new Horloge("Watch-" + COUNT);
     private Chronometre chronometre = new Chronometre();
+    private long setButtonPressTime = 0;
+    private static final long LONG_PRESS_DURATION = 2000; // 2 secondes
     
     // Labels pour l'affichage
     private JLabel hh = new JLabel();
@@ -23,6 +25,8 @@ public class WatchViewer extends JFrame {
     
     // Compteur pour le clignotement
     private boolean blinkOn = true;
+
+    
     
     public WatchViewer() {
         initComponents();
@@ -111,6 +115,35 @@ public class WatchViewer extends JFrame {
     public void setState(WatchState newState) {
         this.currentState = newState;
         currentState.updateDisplay();
+    }
+        /**
+     * Détecte le début de l'appui sur SET
+     */
+    public void onSetButtonPressed() {
+        setButtonPressTime = System.currentTimeMillis();
+    }
+    
+    /**
+     * Détecte la fin de l'appui sur SET
+     */
+    public void onSetButtonReleased() {
+        long pressDuration = System.currentTimeMillis() - setButtonPressTime;
+        
+        if (pressDuration >= LONG_PRESS_DURATION) {
+            // Appui long : Entrer en mode Settings
+            enterSettingsMode();
+        } else {
+            // Appui court : Comportement normal
+            doSet();
+        }
+    }
+    
+    /**
+     * Entre en mode Settings
+     */
+    public void enterSettingsMode() {
+        System.out.println("LONG PRESS detected - Entering SETTINGS mode");
+        setState(new SettingsState(this));
     }
     
     // Getters/Setters pour les labels
